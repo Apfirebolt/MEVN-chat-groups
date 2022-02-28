@@ -2,7 +2,7 @@
   <div>
     <header-component />
     <!-- This example requires Tailwind CSS v2.0+ -->
-    <hero-section message="Welcome to the home page" />
+    <hero-section message="Welcome to the home page of Chat Rooms" />
     <footer-component />
   </div>
 </template>

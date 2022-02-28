@@ -34,10 +34,12 @@ const actions = {
     interceptor
       .post(url, payload)
       .then((response) => {
-        events.emit("add_toast", {
-          content: "Chat Room created successfully",
-          type: "success",
-        });
+        if (response) {
+          events.emit("add_toast", {
+            content: "Chat Room created successfully",
+            type: "success",
+          });
+        }
       })
       .catch((err) => {
         console.log(err);

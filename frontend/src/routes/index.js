@@ -69,6 +69,11 @@ const routes = [
     children: [
       {
         path: '',
+        name: 'Rooms',
+        component: () => import('../views/rooms/list.vue'),
+      },
+      {
+        path: '/:roomName',
         name: 'RoomDetail',
         component: () => import('../views/rooms/detail.vue'),
       },

@@ -6,7 +6,7 @@ import {
   getAllRooms,
   deleteRoom,
   getSingleRoom
-} from '../controllers/roomController'
+} from '../controllers/roomController.js'
 import { protect } from '../middleware/authMiddleware.js'
 
 router

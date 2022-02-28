@@ -7,6 +7,15 @@ import Room from "../models/roomModel.js";
 const createRoom = asyncHandler(async (req, res) => {
   const { name } = req.body;
 
+  const doesRoomExist = await Room.findOne({
+    name
+  });
+
+  if (doesRoomExist) {
+    res.status(409);
+    throw new Error("Someone else has already created a room with that name");
+  }
+
   const room = await Room.create({
     name,
     createdBy: req.user._id,
@@ -23,11 +32,10 @@ const createRoom = asyncHandler(async (req, res) => {
 // @route   POST /api/rooms
 // @access  Public
 const getAllRooms = asyncHandler(async (req, res) => {
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
   const startPage = req.query.page || 1;
-  await Room.find({
-    createdBy: req.user._id,
-  })
+  await Room.find({})
+    .populate("createdBy", 'firstName lastName')
     .skip(itemsPerPage * startPage - itemsPerPage)
     .limit(itemsPerPage)
     .exec(function (err, rooms) {
@@ -71,8 +79,7 @@ const deleteRoom = asyncHandler(async (req, res) => {
 // @access  Private
 const getSingleRoom = asyncHandler(async (req, res) => {
   const room = await Room.findOne({
-    createdBy: req.user._id,
-    _id: req.params.id,
+    name: req.params.roomName,
   });
 
   if (room) {
