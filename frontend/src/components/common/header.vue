@@ -47,6 +47,7 @@ export default {
       getLogoutAction: authTypes.LOG_OUT
     }),
     async logOutFunction() {
+      console.log('Logout called..')
       this.getLogoutAction();
     }
   },

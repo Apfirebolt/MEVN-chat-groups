@@ -60,6 +60,20 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/rooms',
+    meta: {
+      requiresAuth: true,
+    },
+    component: DashboardLayout,
+    children: [
+      {
+        path: '',
+        name: 'RoomDetail',
+        component: () => import('../views/rooms/detail.vue'),
+      },
+    ],
+  },
   { 
     path: "*",
     name: 'NotFound', 
