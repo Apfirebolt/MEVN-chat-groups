@@ -3,19 +3,19 @@
     <main v-if="roomData" class="py-10">
       <!-- Page header -->
       <t-modal v-model="isUpdateModalOpened" header="Update Chat Room">
-          <chat-room-form
-            @updateChatRoom="updateChatRoom"
-            @cancel="isUpdateModalOpened = false"
-            :room="roomData"
-            mode="edit"
-          />
-        </t-modal>
-        <t-modal v-model="isDeleteModalOpened" header="Delete Chat Room">
-          <confirm-modal
-            @submit="deleteChatRoom"
-            @cancel="isDeleteModalOpened = false"
-          />
-        </t-modal>
+        <chat-room-form
+          @updateChatRoom="updateChatRoom"
+          @cancel="isUpdateModalOpened = false"
+          :room="roomData"
+          mode="edit"
+        />
+      </t-modal>
+      <t-modal v-model="isDeleteModalOpened" header="Delete Chat Room">
+        <confirm-modal
+          @submit="deleteChatRoom"
+          @cancel="isDeleteModalOpened = false"
+        />
+      </t-modal>
       <div
         class="mt-8 max-w-3xl mx-auto grid grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3"
       >
@@ -45,20 +45,26 @@
                         </div>
                         <div>
                           <div class="text-sm">
-                            <a href="#" class="font-medium text-gray-900"
-                              >{{ message.username }}</a
-                            >
+                            <a href="#" class="font-medium text-gray-900">{{
+                              message.username
+                            }}</a>
                           </div>
                           <div class="mt-1 text-sm text-gray-700">
                             <p>
                               {{ message.message }}
                             </p>
                           </div>
-                          
                           <div class="mt-2 text-sm space-x-2">
                             <span class="text-gray-500 font-medium"
                               >4d ago</span
                             >
+                            <button
+                              v-if="message.sendBy === profileData._id"
+                              class="text-gray-100 font-medium bg-red-400 px-2 py-1"
+                              @click="deleteChatMessage(message._id)"
+                            >
+                              Delete
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -104,14 +110,17 @@
             </div>
           </section>
         </div>
-        
+
         <section
           aria-labelledby="timeline-title"
           class="lg:col-start-3 lg:col-span-1"
         >
           <div class="bg-white px-4 py-5 shadow sm:rounded-lg sm:px-6">
             <h2 id="timeline-title" class="text-lg font-medium text-gray-900">
-              Created by {{ roomData.createdBy.firstName + ' ' + roomData.createdBy.lastName }}
+              Created by
+              {{
+                roomData.createdBy.firstName + " " + roomData.createdBy.lastName
+              }}
             </h2>
             <div v-if="isRoomOwner" class="mt-6 flex">
               <button
@@ -138,6 +147,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import interceptor from "../../plugins/interceptor";
 import io from "socket.io-client";
 import ChatRoomForm from "../../components/rooms/create-room-modal.vue";
 import ConfirmModal from "../../components/common/confirm-modal.vue";
@@ -148,23 +158,23 @@ export default {
   name: "About",
   components: {
     ChatRoomForm,
-    ConfirmModal
+    ConfirmModal,
   },
   computed: {
     ...mapGetters({
       profileData: authTypes.GET_PROFILE_DATA,
-      roomData: chatRoomTypes.GET_CHAT_ROOM_DETAIL
+      roomData: chatRoomTypes.GET_CHAT_ROOM_DETAIL,
     }),
     isRoomOwner() {
       return this.profileData._id === this.roomData.createdBy._id;
-    }
+    },
   },
   created() {
     this.setupSocketConnection();
   },
   async mounted() {
-    await this.getChatRoomAction(this.$route.params.roomName)
-    this.getAllMessages()
+    await this.getChatRoomAction(this.$route.params.roomName);
+    this.getAllMessages();
   },
   data() {
     return {
@@ -172,7 +182,7 @@ export default {
       isUpdateModalOpened: false,
       isDeleteModalOpened: false,
       messages: [],
-      message: '',
+      message: "",
       socketUrl: "http://localhost:5000/",
     };
   },
@@ -192,10 +202,11 @@ export default {
       const payload = {
         roomId: this.roomData._id,
         userId: this.profileData._id,
-        username: this.profileData.firstName + ' ' + this.profileData.lastName,
+        username: this.profileData.firstName + " " + this.profileData.lastName,
         roomName: this.roomData.name,
-        message: this.message
-      }
+        message: this.message,
+      };
+      this.message = "";
       this.socket.emit("sendMessage", { payload }, (error) => {
         if (error) {
           alert(error);
@@ -205,28 +216,60 @@ export default {
     updateRoomData(newValue, oldValue) {
       if (newValue) {
         this.joinRoom();
+        this.getApiMessages();
       }
+    },
+    getApiMessages() {
+      const url = `/chats/${this.roomData._id}`;
+      interceptor
+        .get(url)
+        .then((response) => {
+          this.messages = response.chats;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     getAllMessages() {
       this.socket.on("message", (messages) => {
         this.messages = messages;
       });
     },
+    deleteChatMessage(messageId) {
+      const url = `/chats/${this.roomData._id}/messages/${messageId}`;
+      interceptor
+        .delete(url)
+        .then((response) => {
+          if (response) {
+            this.getApiMessages();
+            this.$bus.emit("add_toast", {
+              content: "Message deleted successfully",
+              type: "success",
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     updateChatRoom(payload) {
       this.updateChatRoomAction(payload);
       this.isUpdateModalOpened = false;
-      this.$router.push({ name: "RoomDetail", params: { roomName: payload.name } });
+      this.$router.push({
+        name: "RoomDetail",
+        params: { roomName: payload.name },
+      });
     },
     deleteChatRoom() {
       this.deleteChatRoomAction(this.$route.params.roomName);
-      this.isDeleteModalOpened= false;
+      this.isDeleteModalOpened = false;
       this.$router.push({ name: "Rooms" });
     },
     setupSocketConnection() {
       this.socket = io(this.socketUrl);
     },
     joinRoom() {
-      const name = this.profileData.firstName + ' ' + this.profileData.lastName;
+      const name = this.profileData.firstName + " " + this.profileData.lastName;
       const room = this.roomData && this.roomData.name;
       this.socket.emit("join", { name, room }, (error) => {
         if (error) {

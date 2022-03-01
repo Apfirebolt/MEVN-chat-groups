@@ -10,6 +10,7 @@ import connectDB from './config/db.js'
 
 import userRoutes from './routes/userRoutes.js'
 import roomRoutes from './routes/roomRoutes.js'
+import chatRoutes from './routes/chatRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
 import { addMessage } from './controllers/messageController.js'
 
@@ -40,6 +41,7 @@ app.set('views', path.join(__dirname, '/backend/views'));
 
 app.use('/api/users', userRoutes)
 app.use('/api/rooms', roomRoutes)
+app.use('/api/chats', chatRoutes)
 app.use('/api/upload', uploadRoutes)
 
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
