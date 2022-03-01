@@ -1,8 +1,21 @@
 <template>
   <div class="min-h-full">
-    <main class="py-10">
+    <main v-if="roomData" class="py-10">
       <!-- Page header -->
-
+      <t-modal v-model="isUpdateModalOpened" header="Update Chat Room">
+          <chat-room-form
+            @updateChatRoom="updateChatRoom"
+            @cancel="isUpdateModalOpened = false"
+            :room="roomData"
+            mode="edit"
+          />
+        </t-modal>
+        <t-modal v-model="isDeleteModalOpened" header="Delete Chat Room">
+          <confirm-modal
+            @submit="deleteChatRoom"
+            @cancel="isDeleteModalOpened = false"
+          />
+        </t-modal>
       <div
         class="mt-8 max-w-3xl mx-auto grid grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3"
       >
@@ -44,19 +57,11 @@
                               autem. Perferendis rerum et.
                             </p>
                           </div>
+                          
                           <div class="mt-2 text-sm space-x-2">
                             <span class="text-gray-500 font-medium"
                               >4d ago</span
                             >
-                            <span class="text-gray-500 font-medium"
-                              >&middot;</span
-                            >
-                            <button
-                              type="button"
-                              class="text-gray-900 font-medium"
-                            >
-                              Reply
-                            </button>
                           </div>
                         </div>
                       </div>
@@ -107,17 +112,19 @@
         >
           <div class="bg-white px-4 py-5 shadow sm:rounded-lg sm:px-6">
             <h2 id="timeline-title" class="text-lg font-medium text-gray-900">
-              Timeline
+              Created by {{ roomData.createdBy.firstName + ' ' + roomData.createdBy.lastName }}
             </h2>
-            <div class="mt-6 flex">
+            <div v-if="isRoomOwner" class="mt-6 flex">
               <button
                 type="button"
+                @click="isDeleteModalOpened = true"
                 class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Delete Room
               </button>
               <button
                 type="button"
+                @click="isUpdateModalOpened = true"
                 class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-400 hover:bg-green-600 mx-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Update Room
@@ -133,27 +140,37 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import io from "socket.io-client";
+import ChatRoomForm from "../../components/rooms/create-room-modal.vue";
+import ConfirmModal from "../../components/common/confirm-modal.vue";
 import * as authTypes from "../../store/modules/auth/auth-types";
 import * as chatRoomTypes from "../../store/modules/rooms/roomTypes";
 
 export default {
   name: "About",
+  components: {
+    ChatRoomForm,
+    ConfirmModal
+  },
   computed: {
     ...mapGetters({
       profileData: authTypes.GET_PROFILE_DATA,
       roomData: chatRoomTypes.GET_CHAT_ROOM_DETAIL
     }),
+    isRoomOwner() {
+      return this.profileData._id === this.roomData.createdBy._id;
+    }
   },
   created() {
     this.setupSocketConnection();
   },
   mounted() {
-    console.log(this.$route.params.roomName)
     this.getChatRoomAction(this.$route.params.roomName)
   },
   data() {
     return {
       socket: null,
+      isUpdateModalOpened: false,
+      isDeleteModalOpened: false,
       socketUrl: "http://localhost:5000/",
     };
   },
@@ -163,6 +180,16 @@ export default {
       deleteChatRoomAction: chatRoomTypes.DELETE_CHAT_ROOM_REQUEST,
       getChatRoomAction: chatRoomTypes.GET_CHAT_ROOM_REQUEST,
     }),
+    updateChatRoom(payload) {
+      this.updateChatRoomAction(payload);
+      this.isUpdateModalOpened = false;
+      this.$router.push({ name: "RoomDetail", params: { roomName: payload.name } });
+    },
+    deleteChatRoom() {
+      this.deleteChatRoomAction(this.$route.params.roomName);
+      this.isDeleteModalOpened= false;
+      this.$router.push({ name: "Rooms" });
+    },
     setupSocketConnection() {
       this.socket = io(this.socketUrl);
     },

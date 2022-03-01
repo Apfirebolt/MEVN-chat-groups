@@ -16,7 +16,9 @@ router
 router
   .route('/:roomName')
   .get(protect, getSingleRoom)
-  .put(protect, updateRoom)
   .delete(protect, deleteRoom)
+router
+  .route('/:roomId')
+  .put(protect, updateRoom)
 
 export default router

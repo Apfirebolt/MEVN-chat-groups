@@ -97,7 +97,7 @@ const actions = {
   [types.UPDATE_CHAT_ROOM_REQUEST]: ({ commit }, payload) => {
     const url = `/rooms/${payload._id}`;
     interceptor
-      .patch(url, payload)
+      .put(url, payload)
       .then((response) => {
         if (response) {
           events.emit("add_toast", {

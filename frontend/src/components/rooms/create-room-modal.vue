@@ -31,11 +31,9 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import * as chatRoomTypes from '../../store/modules/rooms/roomTypes';
 
 export default {
-  name: 'AddBorrowForm',
+  name: 'ChatRoomForm',
   props: {
     room: {
       type: Object,

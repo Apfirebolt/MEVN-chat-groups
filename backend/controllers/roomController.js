@@ -58,7 +58,7 @@ const getAllRooms = asyncHandler(async (req, res) => {
 // @access  Private
 const deleteRoom = asyncHandler(async (req, res) => {
   const isRoomDeleted = await Room.deleteOne(
-    { createdBy: req.user._id, _id: req.params.id },
+    { createdBy: req.user._id, name: req.params.roomName },
     {
       useFindAndModify: false,
     }
@@ -80,7 +80,8 @@ const deleteRoom = asyncHandler(async (req, res) => {
 const getSingleRoom = asyncHandler(async (req, res) => {
   const room = await Room.findOne({
     name: req.params.roomName,
-  });
+  })
+  .populate("createdBy", 'firstName lastName');
 
   if (room) {
     res.json({
@@ -97,7 +98,7 @@ const getSingleRoom = asyncHandler(async (req, res) => {
 // @access  Private
 const updateRoom = asyncHandler(async (req, res) => {
   const room = await Room.findOneAndUpdate(
-    { createdBy: req.user._id, _id: req.params.id },
+    { createdBy: req.user._id, _id: req.body._id },
     req.body,
     {
       new: true,
