@@ -32,9 +32,9 @@
                     {{ roomData.name }}
                   </h2>
                 </div>
-                <div class="px-4 py-6 sm:px-6">
+                <div v-if="messages.length" class="px-4 py-6 sm:px-6">
                   <ul role="list" class="space-y-8">
-                    <li>
+                    <li v-for="(message, index) in messages" :key="index">
                       <div class="flex space-x-3">
                         <div class="flex-shrink-0">
                           <img
@@ -46,15 +46,12 @@
                         <div>
                           <div class="text-sm">
                             <a href="#" class="font-medium text-gray-900"
-                              >Dries Vincent</a
+                              >{{ message.username }}</a
                             >
                           </div>
                           <div class="mt-1 text-sm text-gray-700">
                             <p>
-                              Expedita consequatur sit ea voluptas quo ipsam
-                              recusandae. Ab sint et voluptatem repudiandae
-                              voluptatem et eveniet. Nihil quas consequatur
-                              autem. Perferendis rerum et.
+                              {{ message.message }}
                             </p>
                           </div>
                           
@@ -86,6 +83,7 @@
                           id="comment"
                           name="comment"
                           rows="3"
+                          v-model="message"
                           class="shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
                           placeholder="Add a note"
                         ></textarea>
@@ -93,9 +91,10 @@
                       <div class="mt-3 flex items-center justify-between">
                         <button
                           type="submit"
+                          @click.prevent="postNewMessage"
                           class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         >
-                          Comment
+                          Post
                         </button>
                       </div>
                     </form>
@@ -163,16 +162,25 @@ export default {
   created() {
     this.setupSocketConnection();
   },
-  mounted() {
-    this.getChatRoomAction(this.$route.params.roomName)
+  async mounted() {
+    await this.getChatRoomAction(this.$route.params.roomName)
+    this.getAllMessages()
   },
   data() {
     return {
       socket: null,
       isUpdateModalOpened: false,
       isDeleteModalOpened: false,
+      messages: [],
+      message: '',
       socketUrl: "http://localhost:5000/",
     };
+  },
+  watch: {
+    roomData: {
+      handler: "updateRoomData",
+      deep: true,
+    },
   },
   methods: {
     ...mapActions({
@@ -180,6 +188,31 @@ export default {
       deleteChatRoomAction: chatRoomTypes.DELETE_CHAT_ROOM_REQUEST,
       getChatRoomAction: chatRoomTypes.GET_CHAT_ROOM_REQUEST,
     }),
+    async postNewMessage() {
+      const payload = {
+        username: this.profileData.firstName + ' ' + this.profileData.lastName,
+        roomName: this.roomData.name,
+        message: this.message
+      }
+      this.socket.emit("sendMessage", payload, (error) => {
+        if (error) {
+          alert(error);
+        }
+      });
+    },
+    updateRoomData(newValue, oldValue) {
+      if (newValue) {
+        this.joinRoom();
+      }
+    },
+    async deleteMessage() {
+
+    },
+    getAllMessages() {
+      this.socket.on("message", (messages) => {
+        this.messages = messages;
+      });
+    },
     updateChatRoom(payload) {
       this.updateChatRoomAction(payload);
       this.isUpdateModalOpened = false;
@@ -194,16 +227,12 @@ export default {
       this.socket = io(this.socketUrl);
     },
     joinRoom() {
-      const name = this.profileData.firstName;
-      const room = "Draco";
+      const name = this.profileData.firstName + ' ' + this.profileData.lastName;
+      const room = this.roomData && this.roomData.name;
       this.socket.emit("join", { name, room }, (error) => {
         if (error) {
           alert(error);
         }
-      });
-
-      this.socket.on("message", (payload) => {
-        console.log("Data socket is ", payload);
       });
     },
   },

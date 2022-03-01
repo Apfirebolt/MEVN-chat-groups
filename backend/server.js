@@ -64,6 +64,8 @@ app.get('/sample', function(req, res) {
 app.use(notFound)
 app.use(errorHandler)
 
+const messageList = []
+
 io.on('connect', (socket) => {
   console.log('Connected to socket ', socket.id)
   socket.on('join', ({ name, room }, callback) => {
@@ -75,12 +77,9 @@ io.on('connect', (socket) => {
     callback();
   });
 
-  socket.on('sendMessage', (message, callback) => {
-    const user = getUser(socket.id);
-
-    
-
-    callback();
+  socket.on('sendMessage', (message) => {
+    messageList.push(message)
+    socket.emit('message', messageList);
   });
 });
 

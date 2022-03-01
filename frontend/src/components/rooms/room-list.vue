@@ -1,5 +1,5 @@
 <template>
-  <div class="shadow overflow-y-visible border-b border-gray-200 sm:rounded-lg">
+  <div class="shadow my-3 overflow-y-visible border-b border-gray-200 sm:rounded-lg">
     <table class="min-w-full divide-y divide-gray-200">
       <thead>
         <tr>
@@ -19,7 +19,7 @@
             Created At
           </th>
           <th
-            class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
+            class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
           >
             Actions
           </th>
@@ -36,7 +36,7 @@
           <td class="px-6 py-3 text-sm leading-5 text-gray-500 font-medium">
             {{ room.createdAt }}
           </td>
-          <td class="px-6 py-3 text-sm leading-5 text-gray-500 font-medium">
+          <td class="px-6 py-3 text-sm text-center leading-5 text-gray-500 font-medium">
             <t-button @click="navigateToChatRoom(room)"> Join Room </t-button>
           </td>
         </tr>
