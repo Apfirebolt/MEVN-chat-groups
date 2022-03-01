@@ -8,9 +8,14 @@
       </div>
       <div class="md:flex-1">
         <div class="flex items-center justify-end md:ml-12">
-          <a v-if="checkUserLoggedIn" class="text-base font-medium bg-green-400 hover:bg-green-700 shadow-md rounded py-2 px-4 text-white mx-4 cursor-pointer" @click.prevent="logOutFunction">
-            Log Out
-          </a>
+          <div v-if="checkUserLoggedIn">
+            <button class="text-base font-medium bg-green-400 hover:bg-green-700 shadow-md rounded py-2 px-4 text-white mx-2 cursor-pointer">
+              Profile Settings
+            </button>
+            <button class="text-base font-medium bg-green-400 hover:bg-green-700 shadow-md rounded py-2 px-4 text-white mx-2 cursor-pointer" @click.prevent="logOutFunction">
+              Log out
+            </button>
+          </div>
           <div v-else>
             <router-link :to="{name: 'Login'}" class="ml-8 inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
               Sign in
@@ -44,7 +49,6 @@ export default {
       getLogoutAction: authTypes.LOG_OUT
     }),
     async logOutFunction() {
-      console.log('Logout called..')
       this.getLogoutAction();
     }
   },

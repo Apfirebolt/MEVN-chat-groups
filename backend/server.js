@@ -70,16 +70,23 @@ io.on('connect', (socket) => {
   console.log('Connected to socket ', socket.id)
   socket.on('join', ({ name, room }, callback) => {
     console.log('Joined room ', name, room)
-    addMessage()
-
-    socket.emit('message', { text: 'Dragon awakens' });
+  
 
     callback();
   });
 
-  socket.on('sendMessage', (message) => {
-    messageList.push(message)
-    socket.emit('message', messageList);
+  socket.on('sendMessage', ({ payload }, callback) => {
+    try {
+      messageList.push(payload)
+      addMessage(payload)
+      socket.emit('message', messageList);
+    } catch(err) {
+      callback();
+    }
+  });
+
+  socket.on('sendMessage', (payload) => {
+    
   });
 });
 

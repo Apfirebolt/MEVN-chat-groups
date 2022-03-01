@@ -190,11 +190,13 @@ export default {
     }),
     async postNewMessage() {
       const payload = {
+        roomId: this.roomData._id,
+        userId: this.profileData._id,
         username: this.profileData.firstName + ' ' + this.profileData.lastName,
         roomName: this.roomData.name,
         message: this.message
       }
-      this.socket.emit("sendMessage", payload, (error) => {
+      this.socket.emit("sendMessage", { payload }, (error) => {
         if (error) {
           alert(error);
         }
@@ -204,9 +206,6 @@ export default {
       if (newValue) {
         this.joinRoom();
       }
-    },
-    async deleteMessage() {
-
     },
     getAllMessages() {
       this.socket.on("message", (messages) => {
