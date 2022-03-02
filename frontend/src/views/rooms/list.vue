@@ -32,7 +32,7 @@
         </div>
       </div>
     </div>
-    <p v-else class="text-3xl text-center my-4 text-red-500">Loading...</p>
+    <loading v-else />
   </span>
 </template>
 <script>
@@ -41,12 +41,14 @@ import * as authTypes from "../../store/modules/auth/auth-types";
 import * as chatRoomTypes from "../../store/modules/rooms/roomTypes";
 import ChatRoomForm from "../../components/rooms/create-room-modal.vue";
 import ChatRoomList from "../../components/rooms/room-list.vue";
+import Loading from "../../components/common/loading.vue";
 
 export default {
   name: "About",
   components: {
     ChatRoomForm,
     ChatRoomList,
+    Loading
   },
   computed: {
     ...mapGetters({

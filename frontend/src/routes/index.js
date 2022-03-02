@@ -47,20 +47,6 @@ const routes = [
     ],
   },
   {
-    path: '/about',
-    meta: {
-      requiresAuth: true,
-    },
-    component: DashboardLayout,
-    children: [
-      {
-        path: '',
-        name: 'About',
-        component: () => import('../views/about.vue'),
-      },
-    ],
-  },
-  {
     path: '/rooms',
     meta: {
       requiresAuth: true,

@@ -1,6 +1,5 @@
 <template>
   <div id="app" class="bg-blue-50">
-    <loading />
     <default-toast />
     <router-view />
   </div>
