@@ -1,5 +1,7 @@
 <template>
-  <div class="shadow my-3 overflow-y-visible border-b border-gray-200 sm:rounded-lg">
+  <div
+    class="shadow my-3 overflow-y-visible border-b border-gray-200 sm:rounded-lg"
+  >
     <table class="min-w-full divide-y divide-gray-200">
       <thead>
         <tr>
@@ -31,12 +33,14 @@
             {{ room.name }}
           </td>
           <td class="px-6 py-3 text-sm leading-5 text-gray-500 font-medium">
-            {{ room.createdBy.firstName + ' ' + room.createdBy.lastName }}
+            {{ room.createdBy.firstName + " " + room.createdBy.lastName }}
           </td>
           <td class="px-6 py-3 text-sm leading-5 text-gray-500 font-medium">
-            {{ room.createdAt }}
+            {{ room.createdAt | formatDate }}
           </td>
-          <td class="px-6 py-3 text-sm text-center leading-5 text-gray-500 font-medium">
+          <td
+            class="px-6 py-3 text-sm text-center leading-5 text-gray-500 font-medium"
+          >
             <t-button @click="navigateToChatRoom(room)"> Join Room </t-button>
           </td>
         </tr>
@@ -45,12 +49,19 @@
   </div>
 </template>
 <script>
+import dayjs from "dayjs";
+
 export default {
   name: "RoomsList",
   props: {
     rooms: {
       type: Array,
       required: true,
+    },
+  },
+  filters: {
+    formatDate(value) {
+      return dayjs(value).format("MMMM D, YYYY");
     },
   },
   methods: {

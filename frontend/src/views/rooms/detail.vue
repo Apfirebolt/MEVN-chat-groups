@@ -91,7 +91,7 @@
                           rows="3"
                           v-model="message"
                           class="shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
-                          placeholder="Add a note"
+                          placeholder="Type your message"
                         ></textarea>
                       </div>
                       <div class="mt-3 flex items-center justify-between">

@@ -36,6 +36,7 @@
   </span>
 </template>
 <script>
+import dayjs from 'dayjs';
 import { mapGetters, mapActions } from "vuex";
 import * as authTypes from "../../store/modules/auth/auth-types";
 import * as chatRoomTypes from "../../store/modules/rooms/roomTypes";
