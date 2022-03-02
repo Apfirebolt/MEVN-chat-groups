@@ -1,13 +1,19 @@
-# Express Vue Auth Boilerplate using Vuex
+# Chat Groups using Express, Vue, Socket IO, MongoDB, Tailwind CSS and Vuex
+
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![Vue.js](https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D)
+![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
 ## Project Briefing
 
-This is a simple boilerplate to get you started with full stack applications using Express and Vue, MongoDB is used as database and tailwind css is used for UI. Yes, it's created in one of the most popular full stack technologies combination known as MEVN. 
-
+This is a multi-user authentication based group chat application. Users can sign-in to the system and start chatting by creating groups, joining existing groups. The user would have authority to perform CRUD operations on the groups they created.
 
 ## Built With
 
 * [Express](https://expressjs.com/)
+* [Socket IO](https://socket.io/)
 * [Vue](https://vuejs.org/)
 * [MongoDB](https://www.mongodb.com/)
 * [Vuex](https://vuex.vuejs.org/)
@@ -37,19 +43,20 @@ npm start
 
 ## Project Updates
 
-- Minor fixes where nested routes was not working.
-- Added Ejs template engine for rendering templates in Express and EJS aside from the Vue build in production.
+- Expect constant updates in terms of UI of the project which is still in development phase.
+- Enhancement like ability to invite users to a chat group can be added later.
 
 ## Project Screenshots
 
-Please find some of the screenshots of the application. Below is the screenshot of the Home page.
-
-![alt text](./screenshots/dashboard.png)
-
-Sign up page.
+Please find some of the screenshots of the application. Screenshots of only those pages are included as of now which are not 
+very likely to change in future. Below is the screenshot of the sign-up page which is likely to be changed slightly
 
 ![alt text](./screenshots/register.png)
 
-Login page.
+This page shows list of chat rooms with details like who created it and when was it created. Day js is used for date filtering.
 
-![alt text](./screenshots/login.png)
+![alt text](./screenshots/chatroom.png)
+
+Chat detail page.
+
+![alt text](./screenshots/detail.png)
