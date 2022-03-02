@@ -20,7 +20,7 @@ const getRoomChats = asyncHandler(async (req, res) => {
   await Chat.find({
     relatedRoom: req.params.roomId
   })
-    .populate("createdBy", 'firstName lastName')
+    .populate("sendBy", 'firstName lastName')
     .skip(itemsPerPage * startPage - itemsPerPage)
     .limit(itemsPerPage)
     .exec(function (err, chats) {

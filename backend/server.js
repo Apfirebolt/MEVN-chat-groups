@@ -67,13 +67,15 @@ app.use(notFound)
 app.use(errorHandler)
 
 const messageList = []
+const users = []
 
 io.on('connect', (socket) => {
   console.log('Connected to socket ', socket.id)
   socket.on('join', ({ name, room }, callback) => {
-    console.log('Joined room ', name, room)
-  
-
+    if (users.indexOf(name) === -1) {
+      users.push(name) 
+    }
+    socket.emit('joinUser', users);
     callback();
   });
 
@@ -85,10 +87,6 @@ io.on('connect', (socket) => {
     } catch(err) {
       callback();
     }
-  });
-
-  socket.on('sendMessage', (payload) => {
-    
   });
 });
 

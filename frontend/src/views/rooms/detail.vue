@@ -56,7 +56,7 @@
                           </div>
                           <div class="mt-2 text-sm space-x-2">
                             <span class="text-gray-500 font-medium"
-                              >4d ago</span
+                              >{{ message.sendBy.firstName + ' ' + message.sendBy.lastName }}</span
                             >
                             <button
                               v-if="message.sendBy === profileData._id"
@@ -110,7 +110,7 @@
             </div>
           </section>
         </div>
-
+        
         <section
           aria-labelledby="timeline-title"
           class="lg:col-start-3 lg:col-span-1"
@@ -122,11 +122,13 @@
                 roomData.createdBy.firstName + " " + roomData.createdBy.lastName
               }}
             </h2>
-            <div v-if="isRoomOwner" class="mt-6 flex">
+            <div v-if="isRoomOwner" class="mt-6">
+              <p class="my-4">Users currently chatting</p>
+              <p v-for="user in users" :key="user" class="my-3 w-1/2 text-center px-2 py-1 leading-5 font-semibold rounded-full bg-red-100 text-green-800"> {{ user }} </p>
               <button
                 type="button"
                 @click="isDeleteModalOpened = true"
-                class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                class="inline-flex items-center justify-center px-4 py-2 my-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Delete Room
               </button>
@@ -171,6 +173,7 @@ export default {
   },
   created() {
     this.setupSocketConnection();
+    this.joinUserRoom();
   },
   async mounted() {
     await this.getChatRoomAction(this.$route.params.roomName);
@@ -182,6 +185,7 @@ export default {
       isUpdateModalOpened: false,
       isDeleteModalOpened: false,
       messages: [],
+      users: [],
       message: "",
       socketUrl: "http://localhost:5000/",
     };
@@ -211,6 +215,11 @@ export default {
         if (error) {
           alert(error);
         }
+      });
+    },
+    joinUserRoom() {
+      this.socket.on("joinUser", (users) => {
+        this.users = users;
       });
     },
     updateRoomData(newValue, oldValue) {
