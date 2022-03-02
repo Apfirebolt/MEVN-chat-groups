@@ -66,7 +66,7 @@ app.get('/sample', function(req, res) {
 app.use(notFound)
 app.use(errorHandler)
 
-const messageList = []
+let messageList = []
 const users = []
 
 io.on('connect', (socket) => {
@@ -88,6 +88,28 @@ io.on('connect', (socket) => {
       callback();
     }
   });
+
+  socket.on('clearUser', ({ username }, callback) => {
+    try {
+      const userIndex = users.indexOf(username);//get  "car" index
+      //remove car from the colors array
+      users.splice(userIndex, 1); // colors = ["red","blue","green"]
+      socket.emit('leaveRoom');
+      console.log(users)
+    } catch(err) {
+      callback();
+    }
+  });
+
+  socket.on('clearMessages', () => {
+    try {
+      messageList = []
+    } catch(err) {
+      console.log(err)
+    }
+  });
+
+  
 });
 
 server.listen(process.env.PORT || 5000, () => console.log(`Server has started.`));

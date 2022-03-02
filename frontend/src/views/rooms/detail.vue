@@ -55,9 +55,9 @@
                             </p>
                           </div>
                           <div class="mt-2 text-sm space-x-2">
-                            <span class="text-gray-500 font-medium"
+                            <!-- <span class="text-gray-500 font-medium"
                               >{{ message.sendBy.firstName + ' ' + message.sendBy.lastName }}</span
-                            >
+                            > -->
                             <button
                               v-if="message.sendBy === profileData._id"
                               class="text-gray-100 font-medium bg-red-400 px-2 py-1"
@@ -108,6 +108,13 @@
                 </div>
               </div>
             </div>
+            <button
+                type="button"
+                @click="leaveRoom"
+                class="inline-flex items-center justify-center px-4 py-2 my-2 border border-transparent text-sm font-medium rounded-md shadow-sm bg-red-300 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Leave Room
+              </button>
           </section>
         </div>
         
@@ -125,6 +132,7 @@
             <div v-if="isRoomOwner" class="mt-6">
               <p class="my-4">Users currently chatting</p>
               <p v-for="user in users" :key="user" class="my-3 w-1/2 text-center px-2 py-1 leading-5 font-semibold rounded-full bg-red-100 text-green-800"> {{ user }} </p>
+              
               <button
                 type="button"
                 @click="isDeleteModalOpened = true"
@@ -179,6 +187,9 @@ export default {
     await this.getChatRoomAction(this.$route.params.roomName);
     this.getAllMessages();
   },
+  beforeDestroy() {
+    this.clearChatMessages()
+  },
   data() {
     return {
       socket: null,
@@ -209,6 +220,7 @@ export default {
         username: this.profileData.firstName + " " + this.profileData.lastName,
         roomName: this.roomData.name,
         message: this.message,
+        sendBy: this.profileData
       };
       this.message = "";
       this.socket.emit("sendMessage", { payload }, (error) => {
@@ -217,9 +229,23 @@ export default {
         }
       });
     },
+    clearChatMessages() {
+      this.socket.emit("clearMessages");
+    },
+    leaveRoom() {
+      const username = this.profileData.firstName + ' ' + this.profileData.lastName;
+      this.socket.emit("clearUser", { username }, (error) => {
+        if (error) {
+          alert(error);
+        }
+      });
+    },
     joinUserRoom() {
       this.socket.on("joinUser", (users) => {
         this.users = users;
+      });
+      this.socket.on("leaveRoom", () => {
+        this.$router.push({ name: 'Rooms' })
       });
     },
     updateRoomData(newValue, oldValue) {
