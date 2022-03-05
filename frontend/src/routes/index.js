@@ -47,6 +47,20 @@ const routes = [
     ],
   },
   {
+    path: '/profile',
+    meta: {
+      requiresAuth: true,
+    },
+    component: DashboardLayout,
+    children: [
+      {
+        path: '',
+        name: 'Profile',
+        component: () => import('../views/profile.vue'),
+      },
+    ],
+  },
+  {
     path: '/rooms',
     meta: {
       requiresAuth: true,

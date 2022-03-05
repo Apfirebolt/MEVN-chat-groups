@@ -1,3 +1,4 @@
+import fs from 'fs'
 import asyncHandler from 'express-async-handler'
 import generateToken from '../utils/generateToken.js'
 import User from '../models/userModel.js'
@@ -75,6 +76,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      avatar: user.avatar,
       isAdmin: user.isAdmin,
     })
   } else {
@@ -112,9 +114,49 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc      Add Profile Picture
+// @route     POST /api/upload
+// @access    Private
+const updateProfilePicture = asyncHandler(async (req, res, next) => {
+
+  const user = await User.findById(req.user._id)
+
+  if (user) {
+    // Check if user avatar exists
+    if (user.avatar) {
+      fs.unlink("./uploads/" + user.avatar, (err) => {
+        if (err) {
+          res.status(500).json({
+            message: "Something went wrong",
+            success: false,
+          });
+        }
+      });
+    }
+    
+    user.avatar = req.file.filename || user.avatar
+
+    const updatedUser = await user.save()
+
+    res.json({
+      _id: updatedUser._id,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+      avatar: updatedUser.avatar,
+      token: generateToken(updatedUser._id),
+    })
+  } else {
+    res.status(404)
+    throw new Error('User not found')
+  }
+});
+
 export {
   authUser,
   registerUser,
   getUserProfile,
   updateUserProfile,
+  updateProfilePicture
 }

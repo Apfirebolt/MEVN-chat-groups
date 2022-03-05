@@ -77,7 +77,7 @@
                   <div class="flex-shrink-0">
                     <img
                       class="h-10 w-10 rounded-full"
-                      src="https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80"
+                      :src="getUserAvatar"
                       alt=""
                     />
                   </div>
@@ -187,6 +187,10 @@ export default {
     isRoomOwner() {
       return this.profileData._id === this.roomData.createdBy._id;
     },
+    getUserAvatar() {
+      const defaultAvatar = 'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80'
+      return this.profileData.avatar ? process.env.VUE_APP_MEDIA_URL + this.profileData.avatar : defaultAvatar;
+    }
   },
   created() {
     this.setupSocketConnection();

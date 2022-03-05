@@ -9,9 +9,9 @@
       <div class="md:flex-1">
         <div class="flex items-center justify-end md:ml-12">
           <div v-if="checkUserLoggedIn">
-            <button class="text-base font-medium bg-green-400 hover:bg-green-700 shadow-md rounded py-2 px-4 text-white mx-2 cursor-pointer">
+            <router-link :to="{name: 'Profile'}" class="text-base font-medium bg-green-400 hover:bg-green-700 shadow-md rounded py-2 px-4 text-white mx-2 cursor-pointer">
               Profile Settings
-            </button>
+            </router-link>
             <button class="text-base font-medium bg-green-400 hover:bg-green-700 shadow-md rounded py-2 px-4 text-white mx-2 cursor-pointer" @click.prevent="logOutFunction">
               Log out
             </button>
